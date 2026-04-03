@@ -2,18 +2,20 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
-from taxi.models import Driver, Car
+from taxi.models import Car
 
 
 class DriverCreationForm(UserCreationForm):
-    pass
+    class Meta(UserCreationForm):
+        model = get_user_model()
+        fields = UserCreationForm.Meta.fields + ("license_number",)
 
 
 class DriverLicenseUpdateForm(forms.ModelForm):
     MIN_LENGTH = 8
 
     class Meta:
-        model = Driver
+        model = get_user_model()
         fields = ("license_number",)
 
     def clean_license_number(self):
@@ -25,7 +27,10 @@ class DriverLicenseUpdateForm(forms.ModelForm):
                 f"{DriverLicenseUpdateForm.MIN_LENGTH} characters"
             )
 
-        if not license_number[:3].isalpha() and not license_number[:3].isupper():
+        if (
+            not license_number[:3].isalpha()
+            or not license_number[:3].isupper()
+        ):
             raise forms.ValidationError(
                 "license_number first 3 characters are uppercase letters"
             )

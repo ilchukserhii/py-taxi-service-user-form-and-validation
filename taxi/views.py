@@ -72,6 +72,7 @@ class CarDetailView(LoginRequiredMixin, generic.DetailView):
 
         return redirect("taxi:car-detail", pk=self.object.pk)
 
+
 class CarCreateView(LoginRequiredMixin, generic.CreateView):
     model = Car
     form_class = CarCreationForm
@@ -97,8 +98,12 @@ class DriverListView(LoginRequiredMixin, generic.ListView):
 class DriverCreateView(LoginRequiredMixin, generic.CreateView):
     model = Driver
     form_class = DriverCreationForm
-    success_url = reverse_lazy("taxi:driver-detail")
     template_name = "taxi/driver_create.html"
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "taxi:driver-detail", kwargs={"pk": self.object.pk}
+        )
 
 
 class DriverUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -109,6 +114,7 @@ class DriverUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class DriverDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Driver
+    success_url = reverse_lazy("taxi:driver-list")
 
 
 class DriverDetailView(LoginRequiredMixin, generic.DetailView):
